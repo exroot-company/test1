@@ -3,225 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test 1 - Dashboard di Prova</title>
+    <title>Sito in Costruzione | Stiamo Arrivando</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        
+        /* Importazione di un font elegante e geometrico */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap');
+
         body {
-            font-family: 'Inter', sans-serif;
-            scroll-behavior: smooth;
+            font-family: 'Outfit', sans-serif;
+            background-color: #fcfcfc;
+            overflow-x: hidden;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        /* --- Animazioni Sfere Fluttuanti --- */
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+            animation: float-blob 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .blob-1 {
+            top: -10%; left: -10%;
+            width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(255,183,178,1) 0%, rgba(255,226,226,0) 70%);
+            animation-delay: 0s;
         }
 
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
+        .blob-2 {
+            bottom: -20%; right: -10%;
+            width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(181,198,255,1) 0%, rgba(226,233,255,0) 70%);
+            animation-delay: -5s;
         }
 
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
+        .blob-3 {
+            top: 40%; left: 40%;
+            width: 40vw; height: 40vw;
+            background: radial-gradient(circle, rgba(255,236,179,1) 0%, rgba(255,248,225,0) 70%);
+            animation-delay: -10s;
         }
 
-        .toast {
-            visibility: hidden;
-            min-width: 250px;
-            margin-left: -125px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 8px;
-            padding: 16px;
-            position: fixed;
-            z-index: 100;
-            left: 50%;
-            bottom: 30px;
-            font-size: 14px;
-            transition: visibility 0s, opacity 0.5s linear;
+        @keyframes float-blob {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(5%, 10%) scale(1.1); }
+            66% { transform: translate(-5%, 5%) scale(0.9); }
+            100% { transform: translate(0, -10%) scale(1.05); }
+        }
+
+        /* --- Effetto Vetro (Glassmorphism) --- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 4px 24px -1px rgba(0, 0, 0, 0.04),
+                0 10px 40px -10px rgba(0, 0, 0, 0.04),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+        }
+
+        /* --- Animazioni di Entrata --- */
+        .fade-in-up {
             opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .toast.show {
-            visibility: visible;
-            opacity: 1;
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="relative min-h-screen flex flex-col items-center justify-center text-slate-800 selection:bg-indigo-100 selection:text-indigo-900">
 
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 glass-card px-6 py-4 flex justify-between items-center shadow-sm">
-        <div class="flex items-center space-x-2">
-            <div class="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center text-white font-bold">T1</div>
-            <span class="text-xl font-bold tracking-tight">Test<span class="text-indigo-600">1</span></span>
-        </div>
-        <div class="hidden md:flex space-x-8 font-medium">
-            <a href="#features" class="hover:text-indigo-600 transition">Caratteristiche</a>
-            <a href="#stats" class="hover:text-indigo-600 transition">Statistiche</a>
-            <a href="#demo" class="hover:text-indigo-600 transition">Demo Live</a>
-        </div>
-        <button onclick="showToast('Grazie per aver cliccato!')" class="bg-indigo-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-indigo-700 transition shadow-lg">
-            Inizia Ora
-        </button>
-    </nav>
+    <!-- Sfondi Animati -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
-    <!-- Hero Section -->
-    <header class="relative pt-32 pb-20 px-6 overflow-hidden">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between">
-            <div class="md:w-1/2 space-y-6 z-10">
-                <span class="bg-indigo-100 text-indigo-700 px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider">Benvenuto nel Test 1</span>
-                <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">
-                    Sperimenta il <br><span class="text-transparent bg-clip-text gradient-bg">Futuro Digitale</span>
-                </h1>
-                <p class="text-gray-600 text-lg max-w-lg leading-relaxed">
-                    Questa è la tua nuova dashboard di prova. Un ambiente sicuro per testare le tue idee, scalare le tue applicazioni e visualizzare i tuoi dati in tempo reale.
-                </p>
-                <div class="flex space-x-4 pt-4">
-                    <button class="bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:shadow-2xl transition">Esplora Progetto</button>
-                    <button class="bg-white text-gray-800 border border-gray-200 px-8 py-4 rounded-xl font-bold hover:bg-gray-50 transition">Vedi Video</button>
-                </div>
-            </div>
-            <div class="md:w-1/2 mt-12 md:mt-0 relative flex justify-center">
-                <!-- Abstract Visual Asset -->
-                <div class="w-64 h-64 md:w-96 md:h-96 gradient-bg rounded-full animate-float opacity-80 blur-3xl absolute -z-10"></div>
-                <div class="glass-card p-8 rounded-3xl shadow-2xl relative z-10 border border-white/40">
-                    <div class="space-y-4">
-                        <div class="flex space-x-2">
-                            <div class="w-3 h-3 rounded-full bg-red-400"></div>
-                            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-                            <div class="w-3 h-3 rounded-full bg-green-400"></div>
-                        </div>
-                        <div class="h-32 w-64 md:w-80 bg-gray-100 rounded-lg animate-pulse mb-4"></div>
-                        <div class="h-4 w-3/4 bg-gray-200 rounded"></div>
-                        <div class="h-4 w-1/2 bg-gray-200 rounded"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- Contenitore Principale -->
+    <main class="relative z-10 w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-screen">
 
-    <!-- Stats Section -->
-    <section id="stats" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div class="text-center">
-                <p class="text-4xl font-bold text-indigo-600">99.9%</p>
-                <p class="text-gray-500 font-medium">Uptime</p>
-            </div>
-            <div class="text-center">
-                <p class="text-4xl font-bold text-indigo-600">10k+</p>
-                <p class="text-gray-500 font-medium">Utenti Attivi</p>
-            </div>
-            <div class="text-center">
-                <p class="text-4xl font-bold text-indigo-600">5ms</p>
-                <p class="text-gray-500 font-medium">Latenza</p>
-            </div>
-            <div class="text-center">
-                <p class="text-4xl font-bold text-indigo-600">24/7</p>
-                <p class="text-gray-500 font-medium">Supporto</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Demo/Action Section -->
-    <section id="demo" class="py-20 px-6">
-        <div class="max-w-4xl mx-auto glass-card p-10 rounded-3xl shadow-xl text-center">
-            <h2 class="text-3xl font-bold mb-6">Area Test Interattiva</h2>
-            <p class="mb-8 text-gray-600">Prova i componenti della UI cliccando sui pulsanti qui sotto.</p>
+        <!-- Glass Card Centrale -->
+        <div class="glass-panel rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 md:p-16 w-full text-center fade-in-up delay-100">
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                    <i class="fas fa-plus-circle text-2xl text-indigo-500 mb-4"></i>
-                    <h3 class="font-bold mb-2">Contatore</h3>
-                    <div class="text-2xl font-bold text-indigo-600 mb-4" id="counter">0</div>
-                    <button onclick="updateCounter()" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Incrementa</button>
-                </div>
-
-                <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                    <i class="fas fa-palette text-2xl text-pink-500 mb-4"></i>
-                    <h3 class="font-bold mb-2">Tema</h3>
-                    <p class="text-xs text-gray-500 mb-4">Cambia l'accento colore</p>
-                    <button onclick="changeTheme()" class="w-full py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition">Cambia</button>
-                </div>
-
-                <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                    <i class="fas fa-bell text-2xl text-yellow-500 mb-4"></i>
-                    <h3 class="font-bold mb-2">Notifica</h3>
-                    <p class="text-xs text-gray-500 mb-4">Invia un avviso rapido</p>
-                    <button onclick="showToast('Test di notifica completato!')" class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">Notifica</button>
-                </div>
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-slate-100 shadow-sm mb-8">
+                <span class="relative flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
+                </span>
+                <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Lancio Imminente</span>
             </div>
+
+            <!-- Titolo Principale -->
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight text-slate-900 fade-in-up delay-200">
+                Stiamo creando <br class="hidden sm:block"/> qualcosa di <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-rose-400">straordinario.</span>
+            </h1>
+
+            <!-- Sottotitolo -->
+            <p class="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto font-light leading-relaxed fade-in-up delay-300">
+                Il nostro nuovo sito web è attualmente in fase di realizzazione. <br class="hidden sm:block"/>Torna a trovarci presto per scoprire tutte le novità.
+            </p>
+
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12 px-6">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-            <div class="flex items-center space-x-2 mb-6 md:mb-0">
-                <div class="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center text-white font-bold">T1</div>
-                <span class="text-xl font-bold">Test1 Inc.</span>
-            </div>
-            <div class="flex space-x-6 text-gray-400">
-                <a href="#" class="hover:text-white transition"><i class="fab fa-github"></i></a>
-                <a href="#" class="hover:text-white transition"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="hover:text-white transition"><i class="fab fa-linkedin"></i></a>
-            </div>
-            <p class="mt-6 md:mt-0 text-gray-500 text-sm">© 2024 Test 1 Project. Tutti i diritti riservati.</p>
-        </div>
-    </footer>
+    </main>
 
-    <!-- Toast Component -->
-    <div id="toast" class="toast">Messaggio di esempio</div>
-
-    <script>
-        // Counter Logic
-        let count = 0;
-        function updateCounter() {
-            count++;
-            document.getElementById('counter').innerText = count;
-        }
-
-        // Theme Logic (Visual update only)
-        function changeTheme() {
-            const colors = ['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#3b82f6'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            const buttons = document.querySelectorAll('.gradient-bg');
-            buttons.forEach(el => {
-                el.style.background = randomColor;
-            });
-            showToast('Colore accento cambiato!');
-        }
-
-        // Custom Toast Notification
-        function showToast(message) {
-            const toast = document.getElementById("toast");
-            toast.innerText = message;
-            toast.classList.add("show");
-            
-            setTimeout(() => {
-                toast.classList.remove("show");
-            }, 3000);
-        }
-
-        // Smooth reveal on scroll logic (Simple)
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('nav');
-            if (window.scrollY > 50) {
-                nav.classList.add('shadow-md');
-            } else {
-                nav.classList.remove('shadow-md');
-            }
-        });
-    </script>
 </body>
 </html>
