@@ -7,55 +7,48 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Importazione di un font elegante e geometrico */
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap');
 
         body {
             font-family: 'Outfit', sans-serif;
             background-color: #fcfcfc;
-            overflow-x: hidden;
+            overflow: hidden; /* Evita scroll accidentali durante le interazioni */
+            touch-action: none; /* Ottimizza l'interazione touch su mobile */
         }
 
-        /* --- Animazioni Sfere Fluttuanti --- */
+        /* --- Sfondi Reattivi --- */
         .blob {
             position: absolute;
             filter: blur(80px);
             z-index: 0;
             opacity: 0.6;
-            animation: float-blob 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50%;
+            /* La transizione morbida per il ritorno alla posizione originale */
+            transition: transform 0.8s cubic-bezier(0.1, 0.8, 0.2, 1);
+            will-change: transform;
         }
 
         .blob-1 {
             top: -10%; left: -10%;
             width: 50vw; height: 50vw;
             background: radial-gradient(circle, rgba(255,183,178,1) 0%, rgba(255,226,226,0) 70%);
-            animation-delay: 0s;
         }
 
         .blob-2 {
             bottom: -20%; right: -10%;
             width: 60vw; height: 60vw;
             background: radial-gradient(circle, rgba(181,198,255,1) 0%, rgba(226,233,255,0) 70%);
-            animation-delay: -5s;
         }
 
         .blob-3 {
             top: 40%; left: 40%;
             width: 40vw; height: 40vw;
             background: radial-gradient(circle, rgba(255,236,179,1) 0%, rgba(255,248,225,0) 70%);
-            animation-delay: -10s;
         }
 
-        @keyframes float-blob {
-            0% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(5%, 10%) scale(1.1); }
-            66% { transform: translate(-5%, 5%) scale(0.9); }
-            100% { transform: translate(0, -10%) scale(1.05); }
-        }
-
-        /* --- Effetto Vetro (Glassmorphism) --- */
+        /* --- Effetto Vetro & Glare 3D --- */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.65);
+            background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.8);
@@ -63,6 +56,27 @@
                 0 4px 24px -1px rgba(0, 0, 0, 0.04),
                 0 10px 40px -10px rgba(0, 0, 0, 0.04),
                 inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        /* Riflesso dinamico sul vetro */
+        .glass-glare {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255,255,255,0.8) 0%, transparent 60%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1;
+        }
+
+        /* Profondità degli elementi interni (Parallasse) */
+        .parallax-item {
+            transform: translateZ(var(--tz, 30px));
+            position: relative;
+            z-index: 10;
         }
 
         /* --- Animazioni di Entrata --- */
@@ -73,54 +87,329 @@
         }
 
         @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .delay-100 { animation-delay: 100ms; }
         .delay-200 { animation-delay: 200ms; }
         .delay-300 { animation-delay: 300ms; }
+
+        /* --- EASTER EGGS & INTERATTIVITÀ --- */
+        
+        /* Onde d'urto (Ripple) al click */
+        .ripple {
+            position: fixed;
+            border: 2px solid rgba(139, 92, 246, 0.4); /* Colore viola chiaro */
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 1;
+            z-index: 0;
+            animation: ripple-anim 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+        
+        @keyframes ripple-anim {
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; border-width: 0px; }
+        }
+
+        /* Particelle Fisiche Avanzate */
+        .physics-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100;
+            border-radius: 50%;
+            will-change: transform, opacity;
+        }
+
+        /* Party Mode Segreta */
+        .party-mode .blob {
+            animation: party-spin 2s linear infinite !important;
+            filter: blur(40px) hue-rotate(0deg);
+        }
+        @keyframes party-spin { 100% { filter: blur(40px) hue-rotate(360deg); } }
+        
+        .party-mode h1 span { animation: rainbow-text 2s linear infinite; }
+        @keyframes rainbow-text { 100% { filter: hue-rotate(360deg); } }
+
+        /* Tilt Card Base */
+        #tilt-card {
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
     </style>
 </head>
-<body class="relative min-h-screen flex flex-col items-center justify-center text-slate-800 selection:bg-indigo-100 selection:text-indigo-900">
+<body class="relative min-h-screen flex flex-col items-center justify-center text-slate-800 selection:bg-indigo-100 selection:text-indigo-900" id="main-body">
 
-    <!-- Sfondi Animati -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
+    <!-- Sfondi Animati (Ora controllati anche dal JS) -->
+    <div class="fixed inset-0 pointer-events-none">
+        <div class="blob blob-1" id="b1" data-speed="0.05"></div>
+        <div class="blob blob-2" id="b2" data-speed="0.08"></div>
+        <div class="blob blob-3" id="b3" data-speed="0.03"></div>
     </div>
 
     <!-- Contenitore Principale -->
-    <main class="relative z-10 w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-screen">
+    <main class="relative z-10 w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-screen perspective-[1200px]">
 
-        <!-- Glass Card Centrale -->
-        <div class="glass-panel rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 md:p-16 w-full text-center fade-in-up delay-100">
-            
-            <!-- Badge -->
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-slate-100 shadow-sm mb-8">
-                <span class="relative flex h-2.5 w-2.5">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
-                </span>
-                <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Lancio Imminente</span>
+        <!-- Wrapper per l'animazione di entrata -->
+        <div class="w-full fade-in-up delay-100 transform-style-3d">
+            <!-- Glass Card Centrale -->
+            <div id="tilt-card" class="glass-panel rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 md:p-16 w-full text-center shadow-2xl">
+                
+                <!-- Glare Layer -->
+                <div class="glass-glare" id="glare"></div>
+
+                <!-- Contenuto con Parallasse Interno -->
+                <div class="parallax-item" style="--tz: 50px;">
+                    <!-- Badge -->
+                    <div id="magic-badge" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-slate-100 shadow-sm mb-8 cursor-pointer hover:scale-105 hover:bg-white transition-all select-none" title="Hmmm, cosa succede se clicchi?">
+                        <span class="relative flex h-2.5 w-2.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
+                        </span>
+                        <span id="badge-text" class="text-xs font-bold uppercase tracking-widest text-slate-500 transition-all duration-300">Lancio Imminente</span>
+                    </div>
+                </div>
+
+                <div class="parallax-item" style="--tz: 80px;">
+                    <!-- Titolo Principale -->
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight text-slate-900 transition-all duration-300">
+                        Stiamo creando <br class="hidden sm:block"/> qualcosa di <span id="sparkle-text" class="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-rose-400 cursor-crosshair">straordinario.</span>
+                    </h1>
+                </div>
+
+                <div class="parallax-item" style="--tz: 30px;">
+                    <!-- Sottotitolo -->
+                    <p class="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto font-light leading-relaxed">
+                        Il nostro nuovo sito web è attualmente in fase di realizzazione. <br class="hidden sm:block"/>Torna a trovarci presto per scoprire tutte le novità.
+                    </p>
+                </div>
+
             </div>
-
-            <!-- Titolo Principale -->
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight text-slate-900 fade-in-up delay-200">
-                Stiamo creando <br class="hidden sm:block"/> qualcosa di <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-rose-400">straordinario.</span>
-            </h1>
-
-            <!-- Sottotitolo -->
-            <p class="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto font-light leading-relaxed fade-in-up delay-300">
-                Il nostro nuovo sito web è attualmente in fase di realizzazione. <br class="hidden sm:block"/>Torna a trovarci presto per scoprire tutte le novità.
-            </p>
-
         </div>
 
     </main>
 
+    <script>
+        // --- 1. SETUP VARIABILI GLOBALI ---
+        const tiltCard = document.getElementById('tilt-card');
+        const glare = document.getElementById('glare');
+        const mainContent = document.querySelector('main');
+        const blobs = [document.getElementById('b1'), document.getElementById('b2'), document.getElementById('b3')];
+        
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let targetX = mouseX;
+        let targetY = mouseY;
+
+        // Traccia costantemente la posizione del mouse
+        window.addEventListener('mousemove', (e) => {
+            targetX = e.clientX;
+            targetY = e.clientY;
+        });
+
+        // Ottimizzazione per Mobile/Touch
+        window.addEventListener('touchmove', (e) => {
+            targetX = e.touches[0].clientX;
+            targetY = e.touches[0].clientY;
+        });
+
+        // --- 2. GIOCO 1: BLOB REATTIVI (MAGNETISMO INVERSO) E MOVIMENTO CONTINUO ---
+        let time = 0;
+        function animateBackground() {
+            time += 0.01;
+            
+            // Interpolazione lineare per un movimento fluido
+            mouseX += (targetX - mouseX) * 0.1;
+            mouseY += (targetY - mouseY) * 0.1;
+
+            blobs.forEach((blob, index) => {
+                // Movimento orbitale naturale indipendente
+                const speed = parseFloat(blob.dataset.speed);
+                const orbitX = Math.sin(time * speed + index) * 100;
+                const orbitY = Math.cos(time * speed + index) * 100;
+
+                // Calcola la repulsione dal mouse
+                const rect = blob.getBoundingClientRect();
+                const blobCenterX = rect.left + rect.width / 2;
+                const blobCenterY = rect.top + rect.height / 2;
+                
+                const dx = blobCenterX - mouseX;
+                const dy = blobCenterY - mouseY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                let repulsionX = 0;
+                let repulsionY = 0;
+                
+                // Se il mouse è vicino (< 400px), il blob "scappa"
+                if (distance < 400) {
+                    const force = (400 - distance) / 400; // 0 to 1
+                    repulsionX = (dx / distance) * force * 150;
+                    repulsionY = (dy / distance) * force * 150;
+                }
+
+                // Applica movimento combinato
+                blob.style.transform = `translate(${orbitX + repulsionX}px, ${orbitY + repulsionY}px)`;
+            });
+
+            requestAnimationFrame(animateBackground);
+        }
+        animateBackground(); // Avvia il loop animato
+
+        // --- 3. GIOCO 2: TILT CARD 3D AVANZATO E RIFLESSO DINAMICO ---
+        mainContent.addEventListener('mousemove', (e) => {
+            const rect = tiltCard.getBoundingClientRect();
+            
+            // Calcola la posizione del mouse relativa al centro della card
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            // Gradi di rotazione (aumentati per effetto più drammatico)
+            const rotateX = ((y - centerY) / centerY) * -15; 
+            const rotateY = ((x - centerX) / centerX) * 15;
+            
+            tiltCard.style.transition = 'transform 0.1s ease-out';
+            tiltCard.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+            // Gestione Glare (Riflesso)
+            glare.style.opacity = '1';
+            glare.style.setProperty('--glare-x', `${(x / rect.width) * 100}%`);
+            glare.style.setProperty('--glare-y', `${(y / rect.height) * 100}%`);
+        });
+
+        mainContent.addEventListener('mouseleave', () => {
+            // Ritorno morbido alla posizione originale
+            tiltCard.style.transition = 'transform 0.8s cubic-bezier(0.1, 0.8, 0.2, 1)';
+            tiltCard.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            glare.style.opacity = '0';
+        });
+
+        // --- 4. GIOCO 3: RIPPLE AL CLICK SULLO SFONDO ---
+        document.getElementById('main-body').addEventListener('mousedown', (e) => {
+            // Evita di creare cerchi se clicco sulla card (lasciamo interagire la card)
+            if(e.target.closest('#tilt-card')) return;
+
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            
+            // Dimensione casuale dell'onda
+            const size = Math.random() * 200 + 100; 
+            ripple.style.width = `${size}px`;
+            ripple.style.height = `${size}px`;
+            
+            ripple.style.left = `${e.clientX}px`;
+            ripple.style.top = `${e.clientY}px`;
+            
+            document.body.appendChild(ripple);
+            
+            // Rimuovi l'elemento dal DOM dopo l'animazione
+            setTimeout(() => ripple.remove(), 1000);
+        });
+
+        // --- 5. GIOCO 4: GENERATORE FISICO DI PARTICELLE (Sulla parola "straordinario") ---
+        const sparkleText = document.getElementById('sparkle-text');
+        let particles = [];
+        const colors = ['#f43f5e', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b']; // Colori brillanti
+        
+        sparkleText.addEventListener('mousemove', (e) => {
+            // Genera particelle ad altissima frequenza per un effetto "magia liquida"
+            for(let i=0; i<2; i++) {
+                createParticle(e.clientX, e.clientY);
+            }
+        });
+
+        function createParticle(x, y) {
+            const el = document.createElement('div');
+            el.className = 'physics-particle shadow-lg';
+            
+            // Proprietà visuali
+            const size = Math.random() * 8 + 4;
+            el.style.width = `${size}px`;
+            el.style.height = `${size}px`;
+            el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+            document.body.appendChild(el);
+
+            // Proprietà fisiche
+            const particle = {
+                el: el,
+                x: x,
+                y: y,
+                vx: (Math.random() - 0.5) * 15, // Velocità X esplosiva
+                vy: (Math.random() - 0.5) * 15 - 5, // Velocità Y (verso l'alto all'inizio)
+                gravity: 0.8, // Forza di gravità
+                life: 1, // Opacità/Vita
+                decay: Math.random() * 0.02 + 0.01 // Velocità di scomparsa
+            };
+            
+            particles.push(particle);
+        }
+
+        // Loop della fisica delle particelle
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                
+                // Applica fisica
+                p.vy += p.gravity;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= p.decay;
+
+                // Aggiorna DOM
+                p.el.style.transform = `translate(${p.x - parseFloat(p.el.style.left)}px, ${p.y - parseFloat(p.el.style.top)}px)`;
+                p.el.style.opacity = p.life;
+
+                // Rimuovi le particelle morte
+                if (p.life <= 0 || p.y > window.innerHeight + 50) {
+                    p.el.remove();
+                    particles.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(updateParticles);
+        }
+        updateParticles(); // Avvia il motore fisico
+
+        // --- 6. GIOCO 5: PARTY MODE SEGRETA ---
+        let badgeClicks = 0;
+        const magicBadge = document.getElementById('magic-badge');
+        const badgeText = document.getElementById('badge-text');
+
+        magicBadge.addEventListener('click', () => {
+            badgeClicks++;
+            
+            // Micro-animazione di bounce al click
+            magicBadge.style.transform = 'scale(0.85)';
+            setTimeout(() => magicBadge.style.transform = 'scale(1)', 150);
+
+            // Ad ogni click spawna qualche particella per dare feedback
+            const rect = magicBadge.getBoundingClientRect();
+            for(let i=0; i<5; i++){
+                createParticle(rect.left + rect.width/2, rect.top + rect.height/2);
+            }
+
+            if (badgeClicks === 5) {
+                document.body.classList.add('party-mode');
+                badgeText.innerText = "🎉 MODALITÀ PARTY ATTIVATA 🎉";
+                badgeText.classList.remove('text-slate-500');
+                badgeText.classList.add('text-indigo-600');
+                
+                // Esplosione di particelle enorme
+                for(let i=0; i<100; i++){
+                    createParticle(window.innerWidth/2, window.innerHeight/2);
+                }
+                
+                setTimeout(() => {
+                    document.body.classList.remove('party-mode');
+                    badgeText.innerText = "LANCIO IMMINENTE";
+                    badgeText.classList.add('text-slate-500');
+                    badgeText.classList.remove('text-indigo-600');
+                    badgeClicks = 0;
+                }, 10000); // 10 secondi di party
+            }
+        });
+    </script>
 </body>
 </html>
