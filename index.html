@@ -82,46 +82,6 @@
         .delay-100 { animation-delay: 100ms; }
         .delay-200 { animation-delay: 200ms; }
         .delay-300 { animation-delay: 300ms; }
-
-        /* --- EASTER EGGS CSS --- */
-        
-        /* Scintille */
-        .sparkle {
-            position: absolute;
-            pointer-events: none;
-            animation: sparkle-anim 0.8s linear forwards;
-            z-index: 50;
-        }
-        
-        @keyframes sparkle-anim {
-            0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(180deg); opacity: 0; }
-        }
-
-        /* Party Mode Segreta */
-        .party-mode .blob {
-            animation: party-spin 2s linear infinite, float-blob 5s infinite alternate;
-            filter: blur(40px) hue-rotate(0deg);
-        }
-        
-        @keyframes party-spin {
-            100% { filter: blur(40px) hue-rotate(360deg); }
-        }
-        
-        .party-mode h1 span {
-            animation: rainbow-text 2s linear infinite;
-        }
-        
-        @keyframes rainbow-text {
-            100% { filter: hue-rotate(360deg); }
-        }
-
-        /* Tilt Card 3D */
-        #tilt-card {
-            transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
-            will-change: transform;
-        }
     </style>
 </head>
 <body class="relative min-h-screen flex flex-col items-center justify-center text-slate-800 selection:bg-indigo-100 selection:text-indigo-900">
@@ -134,120 +94,33 @@
     </div>
 
     <!-- Contenitore Principale -->
-    <main class="relative z-10 w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-screen perspective-[1000px]">
+    <main class="relative z-10 w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-screen">
 
-        <!-- Wrapper per l'animazione di entrata (separato dal tilt 3D per evitare conflitti) -->
-        <div class="w-full fade-in-up delay-100">
-            <!-- Glass Card Centrale (con ID per il 3D Tilt) -->
-            <div id="tilt-card" class="glass-panel rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 md:p-16 w-full text-center">
-                
-                <!-- Badge (Cliccabile per Easter Egg) -->
-                <div id="magic-badge" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-slate-100 shadow-sm mb-8 cursor-pointer hover:bg-white transition-colors select-none" title="Hmmm, cosa succede se clicchi?">
-                    <span class="relative flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
-                    </span>
-                    <span id="badge-text" class="text-xs font-bold uppercase tracking-widest text-slate-500 transition-all duration-300">Lancio Imminente</span>
-                </div>
-
-                <!-- Titolo Principale -->
-                <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight text-slate-900 transition-all duration-300">
-                    Stiamo creando <br class="hidden sm:block"/> qualcosa di <span id="sparkle-text" class="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-rose-400 cursor-crosshair">straordinario.</span>
-                </h1>
-
-                <!-- Sottotitolo -->
-                <p class="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto font-light leading-relaxed">
-                    Il nostro nuovo sito web è attualmente in fase di realizzazione. <br class="hidden sm:block"/>Torna a trovarci presto per scoprire tutte le novità.
-                </p>
-
+        <!-- Glass Card Centrale -->
+        <div class="glass-panel rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 md:p-16 w-full text-center fade-in-up delay-100">
+            
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-slate-100 shadow-sm mb-8">
+                <span class="relative flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
+                </span>
+                <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Lancio Imminente</span>
             </div>
+
+            <!-- Titolo Principale -->
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight text-slate-900 fade-in-up delay-200">
+                Stiamo creando <br class="hidden sm:block"/> qualcosa di <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-rose-400">straordinario.</span>
+            </h1>
+
+            <!-- Sottotitolo -->
+            <p class="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto font-light leading-relaxed fade-in-up delay-300">
+                Il nostro nuovo sito web è attualmente in fase di realizzazione. <br class="hidden sm:block"/>Torna a trovarci presto per scoprire tutte le novità.
+            </p>
+
         </div>
 
     </main>
 
-    <script>
-        // Easter Egg 1: Effetto Parallasse 3D (Tilt) sulla card
-        const tiltCard = document.getElementById('tilt-card');
-        const mainContent = document.querySelector('main');
-        
-        mainContent.addEventListener('mousemove', (e) => {
-            // Calcola la posizione del mouse rispetto al centro dello schermo
-            const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
-            const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
-            
-            // Applica la rotazione 3D
-            tiltCard.style.transform = `rotateY(${-xAxis}deg) rotateX(${yAxis}deg)`;
-        });
-
-        // Resetta la rotazione dolcemente quando il mouse esce
-        mainContent.addEventListener('mouseleave', () => {
-            tiltCard.style.transition = 'transform 0.5s ease-out';
-            tiltCard.style.transform = `rotateY(0deg) rotateX(0deg)`;
-            
-            // Ripristina la transizione veloce dopo il reset
-            setTimeout(() => {
-                tiltCard.style.transition = 'transform 0.1s ease-out';
-            }, 500);
-        });
-
-        // Easter Egg 2: Effetto Scintille Interattive sulla parola "straordinario"
-        const sparkleText = document.getElementById('sparkle-text');
-        sparkleText.addEventListener('mousemove', (e) => {
-            if(Math.random() > 0.8) { // Genera scintille solo 1 volta su 5 per non intaccare le performance
-                const rect = sparkleText.getBoundingClientRect();
-                const sparkle = document.createElement('div');
-                sparkle.innerText = '✨';
-                sparkle.className = 'sparkle text-yellow-400 text-sm md:text-xl drop-shadow-md';
-                
-                // Posizione random attorno al cursore
-                const x = e.clientX - rect.left + (Math.random() * 20 - 10);
-                const y = e.clientY - rect.top + (Math.random() * 20 - 10);
-                
-                sparkle.style.left = `${x}px`;
-                sparkle.style.top = `${y}px`;
-                
-                // Direzione esplosione casuale
-                sparkle.style.setProperty('--tx', `${Math.random() * 60 - 30}px`);
-                sparkle.style.setProperty('--ty', `${Math.random() * -60 - 20}px`);
-                
-                sparkleText.appendChild(sparkle);
-                
-                // Elimina l'elemento dal DOM a fine animazione
-                setTimeout(() => sparkle.remove(), 800);
-            }
-        });
-
-        // Easter Egg 3: Modalità Party Segreta
-        let badgeClicks = 0;
-        const magicBadge = document.getElementById('magic-badge');
-        const badgeText = document.getElementById('badge-text');
-
-        magicBadge.addEventListener('click', () => {
-            badgeClicks++;
-            
-            // Micro-animazione di feedback al click
-            magicBadge.style.transform = 'scale(0.9)';
-            setTimeout(() => magicBadge.style.transform = 'scale(1)', 150);
-
-            if (badgeClicks === 5) {
-                document.body.classList.add('party-mode');
-                badgeText.innerText = "🎉 MODALITÀ PARTY ATTIVATA 🎉";
-                badgeText.classList.remove('text-slate-500');
-                badgeText.classList.add('text-indigo-600');
-                
-                // Messaggio segreto per i dev nella console
-                console.log("%c Hai trovato l'Easter Egg! Party Mode: ON 🪩 ", "background: #1e293b; color: #10b981; font-size: 16px; font-weight: bold; padding: 10px; border-radius: 8px;");
-                
-                // Resetta i click dopo un po' per spegnere la modalità
-                setTimeout(() => {
-                    document.body.classList.remove('party-mode');
-                    badgeText.innerText = "LANCIO IMMINENTE";
-                    badgeText.classList.add('text-slate-500');
-                    badgeText.classList.remove('text-indigo-600');
-                    badgeClicks = 0;
-                }, 10000); // Il party dura 10 secondi!
-            }
-        });
-    </script>
 </body>
 </html>
