@@ -94,18 +94,15 @@
             z-index: 10;
         }
 
-        /* --- Testo Animato Opalescente --- */
+        /* --- Testo Animato Opalescente (FIX BUG CLIP) --- */
         .iridescent-text {
-            background: linear-gradient(110deg, #9ca3af 0%, #cbd5e1 20%, #f87171 40%, #818cf8 60%, #34d399 80%, #9ca3af 100%);
-            background-size: 200% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: shine 6s linear infinite;
+            color: #818cf8; /* Base color indaco */
+            animation: iridescent-hue 4s linear infinite;
         }
 
-        @keyframes shine {
-            to { background-position: 200% center; }
+        @keyframes iridescent-hue {
+            0% { filter: hue-rotate(0deg) saturate(150%); }
+            100% { filter: hue-rotate(360deg) saturate(150%); }
         }
 
         /* --- Lettere "Scacciate" dal mouse --- */
@@ -215,38 +212,28 @@
         resizeCanvas();
 
         window.addEventListener('mousemove', (e) => {
-            trails.push({ x: e.clientX, y: e.clientY, age: 0, life: 60 });
+            trails.push({ x: e.clientX, y: e.clientY, age: 0, life: 40 }); // Ridotta la life per evitare code troppo lunghe
         });
 
         function drawTrail() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            if (trails.length > 1) {
-                ctx.beginPath();
-                ctx.moveTo(trails[0].x, trails[0].y);
-                
-                for (let i = 1; i < trails.length; i++) {
-                    const p = trails[i];
-                    // Curva di Bezier per rendere la linea fluida
-                    const xc = (trails[i - 1].x + p.x) / 2;
-                    const yc = (trails[i - 1].y + p.y) / 2;
-                    ctx.quadraticCurveTo(trails[i - 1].x, trails[i - 1].y, xc, yc);
-                }
+            if (trails.length < 2) return;
 
-                // Stile della scia (gradiente che svanisce)
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // Disegna segmenti separati per evitare bug con i gradienti e migliorare la fluidità
+            for (let i = 1; i < trails.length; i++) {
+                const p0 = trails[i - 1];
+                const p1 = trails[i];
+                const lifePct = 1 - (p1.age / p1.life);
                 
-                // Creiamo un gradiente basato sulla lunghezza della scia
-                const gradient = ctx.createLinearGradient(
-                    trails[0].x, trails[0].y, 
-                    trails[trails.length-1].x, trails[trails.length-1].y
-                );
-                gradient.addColorStop(0, 'rgba(203, 213, 225, 0)'); // Trasparente inizio
-                gradient.addColorStop(1, 'rgba(167, 139, 250, 0.4)'); // Lilla scuro fine
-                
-                ctx.strokeStyle = gradient;
-                ctx.lineWidth = 40; // Spessore della scia
+                ctx.beginPath();
+                ctx.moveTo(p0.x, p0.y);
+                ctx.lineTo(p1.x, p1.y);
+                ctx.strokeStyle = `rgba(167, 139, 250, ${lifePct * 0.4})`;
+                ctx.lineWidth = 40 * lifePct;
                 ctx.stroke();
             }
 
@@ -259,33 +246,35 @@
             }
         }
 
-        // --- 3. TESTO CHE SCAPPA DAL MOUSE (TUTTE LE LETTERE) ---
+        // --- 3. TESTO CHE SCAPPA DAL MOUSE (FIX BUG SPLITTER) ---
         const titleEl = document.getElementById('dynamic-title');
         
-        // Funzione per splittare i text node senza rompere i tag <span> interni (come quello iridescente)
+        // Funzione sicura per splittare i text node senza rompere il layout
         function splitTextIntoSpans(element) {
             const children = Array.from(element.childNodes);
             element.innerHTML = '';
             
             children.forEach(node => {
                 if (node.nodeType === 3) { // Text node
-                    const text = node.nodeValue;
-                    text.split('').forEach(char => {
-                        const span = document.createElement('span');
-                        span.className = 'repel-letter';
-                        span.innerHTML = char === ' ' ? '&nbsp;' : char;
-                        element.appendChild(span);
+                    node.nodeValue.split('').forEach(char => {
+                        if (char.trim() === '') {
+                            element.appendChild(document.createTextNode(char)); // Mantiene gli spazi nativi
+                        } else {
+                            const span = document.createElement('span');
+                            span.className = 'repel-letter';
+                            span.innerText = char;
+                            element.appendChild(span);
+                        }
                     });
-                } else if (node.nodeType === 1) { // Element node (es. br, span iridescente)
+                } else if (node.nodeType === 1) { // Element node
                     if(node.tagName.toLowerCase() === 'br') {
-                        element.appendChild(node);
+                        element.appendChild(node.cloneNode());
                     } else {
-                        // Ricorsione per gli span interni
-                        const wrapperSpan = document.createElement('span');
-                        wrapperSpan.className = node.className + ' repel-word'; // Mantiene le classi (es. iridescent-text)
-                        splitTextIntoSpans(node); // processa il contenuto
-                        Array.from(node.childNodes).forEach(child => wrapperSpan.appendChild(child));
-                        element.appendChild(wrapperSpan);
+                        const wrapper = document.createElement(node.tagName);
+                        wrapper.className = node.className; 
+                        splitTextIntoSpans(node); 
+                        Array.from(node.childNodes).forEach(child => wrapper.appendChild(child));
+                        element.appendChild(wrapper);
                     }
                 }
             });
@@ -298,7 +287,7 @@
             el: el, x: 0, y: 0, targetX: 0, targetY: 0, rot: 0, targetRot: 0
         }));
 
-        // --- 4. MOTORE FISICO UNIFICATO ---
+        // --- 4. MOTORE FISICO UNIFICATO (FIX JITTER) ---
         let time = 0;
         let cardRotX = 0; let cardRotY = 0;
         let targetCardRotX = 0; let targetCardRotY = 0;
@@ -312,61 +301,58 @@
             // 4A. Disegna la scia sul canvas
             drawTrail();
 
-            // 4B. Tilt Card 3D
+            // 4B. Tilt Card 3D (Calcolo stabile basato sulla finestra, non sul rect fluttuante)
             if (isHoveringCard) {
+                const cx = window.innerWidth / 2;
+                const cy = window.innerHeight / 2;
+                targetCardRotX = ((mouse.y - cy) / cy) * -8; 
+                targetCardRotY = ((mouse.x - cx) / cx) * 8;
+                
                 const rect = tiltCard.getBoundingClientRect();
                 const x = mouse.x - rect.left;
                 const y = mouse.y - rect.top;
-                const cx = rect.width / 2;
-                const cy = rect.height / 2;
-                
-                targetCardRotX = ((y - cy) / cy) * -8; 
-                targetCardRotY = ((x - cx) / cx) * 8;
-                
                 glare.style.setProperty('--glare-x', `${(x / rect.width) * 100}%`);
                 glare.style.setProperty('--glare-y', `${(y / rect.height) * 100}%`);
             }
-            cardRotX = lerp(cardRotX, targetCardRotX, 0.05);
-            cardRotY = lerp(cardRotY, targetCardRotY, 0.05);
+            cardRotX = lerp(cardRotX, targetCardRotX, 0.08);
+            cardRotY = lerp(cardRotY, targetCardRotY, 0.08);
             tiltCard.style.transform = `rotateX(${cardRotX}deg) rotateY(${cardRotY}deg)`;
 
             // 4C. Lettere del Titolo (Repulsione Fisica)
             letters.forEach(l => {
                 const rect = l.el.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2 - l.x; // ignora la traslazione attuale
+                const centerX = rect.left + rect.width / 2 - l.x; 
                 const centerY = rect.top + rect.height / 2 - l.y;
                 
                 const dx = mouse.x - centerX;
                 const dy = mouse.y - centerY;
                 const dist = Math.sqrt(dx*dx + dy*dy);
                 
-                // Se il mouse è vicino (< 80px), la lettera "scappa"
-                if (dist < 80) {
-                    const push = (80 - dist) / 80;
-                    l.targetX = -dx * push * 0.5; // Spinge via
-                    l.targetY = -dy * push * 0.5;
-                    l.targetRot = (dx > 0 ? -1 : 1) * push * 15; // Ruota leggermente
+                if (dist < 100) { // Raggio leggermente aumentato per una reazione più fluida
+                    const push = (100 - dist) / 100;
+                    l.targetX = -dx * push * 0.6; 
+                    l.targetY = -dy * push * 0.6;
+                    l.targetRot = (dx > 0 ? -1 : 1) * push * 20; 
                 } else {
                     l.targetX = 0; l.targetY = 0; l.targetRot = 0;
                 }
 
-                // Interpolazione elastica per il ritorno
-                l.x = lerp(l.x, l.targetX, 0.1);
-                l.y = lerp(l.y, l.targetY, 0.1);
-                l.rot = lerp(l.rot, l.targetRot, 0.1);
+                l.x = lerp(l.x, l.targetX, 0.15); // Ritorno elastico più veloce
+                l.y = lerp(l.y, l.targetY, 0.15);
+                l.rot = lerp(l.rot, l.targetRot, 0.15);
                 
                 l.el.style.transform = `translate(${l.x}px, ${l.y}px) rotate(${l.rot}deg)`;
             });
 
-            // 4D. Sfondi Blob Magnetici
+            // 4D. Sfondi Blob Magnetici (Calcolo stabile sul centro originale)
             blobs.forEach((blob, index) => {
                 const speed = parseFloat(blob.dataset.speed);
                 const orbitX = Math.sin(time * speed * 2 + index) * 80;
                 const orbitY = Math.cos(time * speed * 1.5 + index) * 80;
 
-                const rect = blob.getBoundingClientRect();
-                const cx = rect.left + rect.width / 2;
-                const cy = rect.top + rect.height / 2;
+                // FIX JITTER: Usa offset base invece di getBoundingClientRect che fluttua
+                const cx = blob.offsetLeft + blob.offsetWidth / 2;
+                const cy = blob.offsetTop + blob.offsetHeight / 2;
                 
                 const dx = cx - mouse.x;
                 const dy = cy - mouse.y;
@@ -375,8 +361,8 @@
                 let repX = 0; let repY = 0;
                 if (dist < 400) {
                     const force = (400 - dist) / 400;
-                    repX = (dx / dist) * force * 100;
-                    repY = (dy / dist) * force * 100;
+                    repX = (dx / dist) * force * 150;
+                    repY = (dy / dist) * force * 150;
                 }
                 
                 let currX = parseFloat(blob.dataset.currX || 0);
