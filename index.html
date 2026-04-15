@@ -176,8 +176,13 @@
                 <div class="parallax-item" style="--tz: 40px;">
                     <!-- Sottotitolo -->
                     <p class="text-lg sm:text-2xl text-slate-500 max-w-2xl mx-auto font-inter font-light leading-relaxed">
-                        Un nuovo livello di estetica digitale sta per essere svelato. <br class="hidden sm:block"/>L'attesa è quasi finita.
+                        L'attesa è quasi finita.
                     </p>
+                </div>
+
+                <div class="parallax-item flex justify-center mt-12" style="--tz: 80px;">
+                    <!-- Logo Exroot -->
+                    <img src="https://i.imgur.com/D8JslBA.png" alt="Exroot" width="1039" height="188" class="w-48 md:w-64 h-auto opacity-90 hover:opacity-100 transition-opacity">
                 </div>
 
             </div>
@@ -246,24 +251,31 @@
             }
         }
 
-        // --- 3. TESTO CHE SCAPPA DAL MOUSE (FIX BUG SPLITTER) ---
+        // --- 3. TESTO CHE SCAPPA DAL MOUSE E FIX A CAPO ---
         const titleEl = document.getElementById('dynamic-title');
         
-        // Funzione sicura per splittare i text node senza rompere il layout
+        // Funzione sicura per splittare i text node preservando le parole intatte
         function splitTextIntoSpans(element) {
             const children = Array.from(element.childNodes);
             element.innerHTML = '';
             
             children.forEach(node => {
                 if (node.nodeType === 3) { // Text node
-                    node.nodeValue.split('').forEach(char => {
-                        if (char.trim() === '') {
-                            element.appendChild(document.createTextNode(char)); // Mantiene gli spazi nativi
+                    // Divide per parole e spazi in modo da non rompere le parole a metà riga
+                    const words = node.nodeValue.split(/(\s+)/);
+                    words.forEach(word => {
+                        if (word.trim() === '') {
+                            element.appendChild(document.createTextNode(word)); // Mantiene gli spazi
                         } else {
-                            const span = document.createElement('span');
-                            span.className = 'repel-letter';
-                            span.innerText = char;
-                            element.appendChild(span);
+                            const wordSpan = document.createElement('span');
+                            wordSpan.className = 'repel-word'; // "display: inline-block" impedisce alla parola di rompersi a metà
+                            word.split('').forEach(char => {
+                                const span = document.createElement('span');
+                                span.className = 'repel-letter';
+                                span.innerText = char;
+                                wordSpan.appendChild(span);
+                            });
+                            element.appendChild(wordSpan);
                         }
                     });
                 } else if (node.nodeType === 1) { // Element node
@@ -375,7 +387,6 @@
                 blob.style.transform = `translate(${currX}px, ${currY}px)`;
             });
 
-            
             requestAnimationFrame(renderLoop);
         }
         renderLoop();
