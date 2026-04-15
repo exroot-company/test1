@@ -3,200 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sito in Costruzione | Stiamo Arrivando</title>
+    <title>Sito in Costruzione | Opalescent Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        /* Un font molto elegante e moderno, perfetto per design "editoriali" */
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap');
 
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background-color: #f1f5f9; /* Grigio ghiaccio super chiaro */
-            overflow: hidden; /* Evita scroll accidentali durante le interazioni */
-            touch-action: none; /* Ottimizza l'interazione touch su mobile */
+        body, html {
+            margin: 0; padding: 0;
+            background-color: #ffffff;
+            overflow: hidden;
+            touch-action: none;
+            cursor: crosshair; /* Cursore minimale a croce */
         }
 
-        /* --- Sfondi Reattivi (Aurora Style) --- */
+        h1, h2, .font-syne { font-family: 'Syne', sans-serif; }
+        p, span, .font-inter { font-family: 'Inter', sans-serif; }
+
+        /* --- Sfondo a Grana Fotografica (Noise) --- */
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            animation: noise-shift 0.2s infinite;
+        }
+
+        @keyframes noise-shift {
+            0% { transform: translate(0,0); }
+            50% { transform: translate(1%, 1%); }
+            100% { transform: translate(-1%, -1%); }
+        }
+
+        /* --- Canvas Scia Liquida --- */
+        #fluid-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+        }
+
+        /* --- Sfondi Opalescenti Reattivi --- */
         .blob {
             position: absolute;
-            filter: blur(100px); /* Sfocatura estrema per effetto gas/aurora */
-            z-index: 0;
-            opacity: 0.7;
+            filter: blur(90px);
+            z-index: 1;
             border-radius: 50%;
-            /* La transizione morbida per il ritorno alla posizione originale */
-            transition: transform 0.8s cubic-bezier(0.1, 0.8, 0.2, 1);
+            transition: transform 1s cubic-bezier(0.1, 0.8, 0.2, 1);
             will-change: transform;
-            mix-blend-mode: multiply; /* Fonde i colori in modo più organico */
+            opacity: 0.6;
         }
 
-        .blob-1 {
-            top: -10%; left: -10%;
-            width: 55vw; height: 55vw;
-            background: #a7f3d0; /* Menta/Smeraldo chiaro */
-        }
+        .blob-1 { width: 50vw; height: 50vw; background: #ffc2e2; top: -10%; left: -10%; } /* Rosa perla */
+        .blob-2 { width: 60vw; height: 60vw; background: #c2e0ff; bottom: -20%; right: -10%; } /* Azzurro ghiaccio */
+        .blob-3 { width: 40vw; height: 40vw; background: #e0ffc2; top: 40%; left: 40%; } /* Verde menta tenue */
 
-        .blob-2 {
-            bottom: -20%; right: -10%;
-            width: 65vw; height: 65vw;
-            background: #e9d5ff; /* Lilla/Lavanda */
-        }
-
-        .blob-3 {
-            top: 40%; left: 40%;
-            width: 45vw; height: 45vw;
-            background: #bae6fd; /* Azzurro cielo */
-        }
-
-        /* --- Effetto Vetro Liquido (Holographic/Opal) & Glare 3D --- */
+        /* --- Vetro di Cristallo (Ultra Pulito) --- */
         .glass-panel {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.2) 100%);
-            backdrop-filter: blur(40px) saturate(120%);
-            -webkit-backdrop-filter: blur(40px) saturate(120%);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            /* Ombre e luci interne per simulare la densità dell'acqua e riflessi olografici */
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(40px) saturate(140%);
+            -webkit-backdrop-filter: blur(40px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.8);
             box-shadow: 
-                0 30px 60px -10px rgba(0, 0, 0, 0.08),
-                inset 0 0 20px rgba(255, 255, 255, 0.9),
-                inset 10px 20px 40px rgba(255, 255, 255, 0.6),
-                inset -10px -20px 40px rgba(255, 255, 255, 0.3);
+                0 20px 50px -10px rgba(0, 0, 0, 0.05),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.5);
             position: relative;
-            overflow: hidden;
             transform-style: preserve-3d;
-            /* L'animazione chiave per l'effetto liquido */
-            animation: liquid-morph 10s ease-in-out infinite alternate;
+            border-radius: 3rem;
         }
 
-        @keyframes liquid-morph {
-            0%, 100% { border-radius: 45px; }
-            33%  { border-radius: 70px 40px 80px 50px / 50px 70px 40px 80px; }
-            66%  { border-radius: 40px 80px 50px 70px / 80px 40px 70px 50px; }
-        }
-
-        /* Riflesso dinamico sul vetro (più olografico e brillante) */
+        /* Glare morbido e diffuso */
         .glass-glare {
             position: absolute;
             inset: 0;
-            background: 
-                radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255,255,255,0.95) 0%, transparent 50%),
-                radial-gradient(circle at calc(100% - var(--glare-x, 50%)) calc(100% - var(--glare-y, 50%)), rgba(233, 213, 255, 0.6) 0%, transparent 60%);
+            border-radius: inherit;
+            background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255,255,255,0.8) 0%, transparent 70%);
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.4s ease-out;
-            z-index: 1;
-            mix-blend-mode: overlay;
+            transition: opacity 0.5s;
+            z-index: 2;
         }
 
-        /* Profondità degli elementi interni (Parallasse) */
         .parallax-item {
             transform: translateZ(var(--tz, 30px));
             position: relative;
             z-index: 10;
         }
 
-        /* --- Animazioni di Entrata --- */
+        /* --- Testo Animato Opalescente --- */
+        .iridescent-text {
+            background: linear-gradient(110deg, #9ca3af 0%, #cbd5e1 20%, #f87171 40%, #818cf8 60%, #34d399 80%, #9ca3af 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 6s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* --- Lettere "Scacciate" dal mouse --- */
+        .repel-word { display: inline-block; white-space: nowrap; }
+        .repel-letter {
+            display: inline-block;
+            will-change: transform;
+            cursor: default;
+        }
+
+        /* --- Animazione Entrata --- */
         .fade-in-up {
             opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transform: translateY(40px);
+            animation: fadeInUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
         .delay-100 { animation-delay: 100ms; }
-        .delay-200 { animation-delay: 200ms; }
-        .delay-300 { animation-delay: 300ms; }
 
-        /* --- EASTER EGGS & INTERATTIVITÀ --- */
-        
-        /* Onde d'urto (Ripple) al click */
-        .ripple {
-            position: fixed;
-            border: 2px solid rgba(45, 212, 191, 0.6); /* Color Teal */
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%) scale(0);
-            opacity: 1;
-            z-index: 0;
-            animation: ripple-anim 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-            box-shadow: 0 0 20px rgba(45, 212, 191, 0.3); /* Glow sull'onda */
+        /* Badge Ripple Infinito */
+        .badge-ping {
+            animation: soft-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
         }
-        
-        @keyframes ripple-anim {
-            100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; border-width: 0px; }
-        }
-
-        /* Particelle Fisiche Avanzate - Neon Style */
-        .physics-particle {
-            position: fixed;
-            pointer-events: none;
-            z-index: 100;
-            border-radius: 50%;
-            will-change: transform, opacity;
-            box-shadow: 0 0 12px currentColor; /* Effetto luce al neon */
-        }
-
-        /* Party Mode Segreta */
-        .party-mode .blob {
-            animation: party-spin 2s linear infinite !important;
-            filter: blur(60px) hue-rotate(0deg);
-        }
-        @keyframes party-spin { 100% { filter: blur(60px) hue-rotate(360deg); } }
-        
-        .party-mode h1 span { animation: rainbow-text 2s linear infinite; }
-        @keyframes rainbow-text { 100% { filter: hue-rotate(360deg); } }
-
-        /* Tilt Card Base */
-        #tilt-card {
-            transform-style: preserve-3d;
-            will-change: transform;
+        @keyframes soft-ping {
+            75%, 100% { transform: scale(2); opacity: 0; }
         }
     </style>
 </head>
-<body class="relative min-h-screen flex flex-col items-center justify-center text-slate-800 selection:bg-indigo-100 selection:text-indigo-900" id="main-body">
+<body class="text-slate-900 selection:bg-slate-200 selection:text-slate-900">
 
-    <!-- Sfondi Animati (Ora controllati anche dal JS) -->
+    <!-- Overlay Grana Pellicola -->
+    <div class="noise-overlay"></div>
+
+    <!-- Canvas per la scia interattiva -->
+    <canvas id="fluid-canvas"></canvas>
+
+    <!-- Sfondi Blob -->
     <div class="fixed inset-0 pointer-events-none">
-        <div class="blob blob-1" id="b1" data-speed="0.05"></div>
-        <div class="blob blob-2" id="b2" data-speed="0.08"></div>
-        <div class="blob blob-3" id="b3" data-speed="0.03"></div>
+        <div class="blob blob-1" id="b1" data-speed="0.03"></div>
+        <div class="blob blob-2" id="b2" data-speed="0.04"></div>
+        <div class="blob blob-3" id="b3" data-speed="0.02"></div>
     </div>
 
     <!-- Contenitore Principale -->
-    <main class="relative z-10 w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-screen perspective-[1200px]">
+    <main class="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-screen perspective-[1500px]">
 
-        <!-- Wrapper per l'animazione di entrata -->
         <div class="w-full fade-in-up delay-100 transform-style-3d">
-            <!-- Glass Card Centrale -->
-            <div id="tilt-card" class="glass-panel p-8 sm:p-12 md:p-16 w-full text-center">
+            <!-- Glass Card -->
+            <div id="tilt-card" class="glass-panel p-8 sm:p-14 md:p-20 w-full text-center group">
                 
-                <!-- Glare Layer -->
                 <div class="glass-glare" id="glare"></div>
 
-                <!-- Contenuto con Parallasse Interno -->
-                <div class="parallax-item" style="--tz: 50px;">
+                <div class="parallax-item" style="--tz: 60px;">
                     <!-- Badge -->
-                    <div id="magic-badge" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-slate-100 shadow-sm mb-8 cursor-pointer hover:scale-105 hover:bg-white transition-all select-none" title="Hmmm, cosa succede se clicchi?">
-                        <span class="relative flex h-2.5 w-2.5">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-500"></span>
+                    <div class="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/60 border border-white/80 shadow-[0_4px_12px_rgba(0,0,0,0.02)] mb-10 backdrop-blur-md">
+                        <span class="relative flex h-2 w-2">
+                            <span class="badge-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-slate-800"></span>
                         </span>
-                        <span id="badge-text" class="text-xs font-bold uppercase tracking-[0.15em] text-slate-500 transition-all duration-300">Nuova Versione</span>
+                        <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-800 font-inter">Esperienza Inedita</span>
                     </div>
                 </div>
 
-                <div class="parallax-item" style="--tz: 80px;">
-                    <!-- Titolo Principale (Nuovo font e sfumatura) -->
-                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-tight text-slate-800 transition-all duration-300">
-                        Stiamo creando <br class="hidden sm:block"/> qualcosa di <span id="sparkle-text" class="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 cursor-crosshair">straordinario.</span>
+                <div class="parallax-item" style="--tz: 100px;">
+                    <!-- Titolo (verrà diviso in lettere da JS) -->
+                    <h1 id="dynamic-title" class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-syne font-bold tracking-tight mb-8 leading-[1.05]">
+                        Stiamo plasmando <br class="hidden sm:block"/> l'<span class="iridescent-text">inimmaginabile.</span>
                     </h1>
                 </div>
 
-                <div class="parallax-item" style="--tz: 30px;">
+                <div class="parallax-item" style="--tz: 40px;">
                     <!-- Sottotitolo -->
-                    <p class="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto font-light leading-relaxed">
-                        Il nostro nuovo sito web è attualmente in fase di realizzazione. <br class="hidden sm:block"/>Preparati a scoprire un'esperienza inedita.
+                    <p class="text-lg sm:text-2xl text-slate-500 max-w-2xl mx-auto font-inter font-light leading-relaxed">
+                        Un nuovo livello di estetica digitale sta per essere svelato. <br class="hidden sm:block"/>L'attesa è quasi finita.
                     </p>
                 </div>
 
@@ -206,226 +189,209 @@
     </main>
 
     <script>
-        // --- 1. SETUP VARIABILI GLOBALI ---
+        // --- 1. SETUP VARIABILI ---
         const tiltCard = document.getElementById('tilt-card');
         const glare = document.getElementById('glare');
-        const mainContent = document.querySelector('main');
         const blobs = [document.getElementById('b1'), document.getElementById('b2'), document.getElementById('b3')];
+        const lerp = (start, end, factor) => start + (end - start) * factor;
         
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        let targetX = mouseX;
-        let targetY = mouseY;
+        let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+        let isHoveringCard = false;
 
-        // Traccia costantemente la posizione del mouse
+        // Tracciamento Mouse / Touch
+        window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('touchmove', (e) => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
+
+        // --- 2. CANVAS FLUID TRAIL (SCIA LIQUIDA) ---
+        const canvas = document.getElementById('fluid-canvas');
+        const ctx = canvas.getContext('2d');
+        let trails = [];
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
         window.addEventListener('mousemove', (e) => {
-            targetX = e.clientX;
-            targetY = e.clientY;
+            trails.push({ x: e.clientX, y: e.clientY, age: 0, life: 60 });
         });
 
-        // Ottimizzazione per Mobile/Touch
-        window.addEventListener('touchmove', (e) => {
-            targetX = e.touches[0].clientX;
-            targetY = e.touches[0].clientY;
-        });
-
-        // --- 2. GIOCO 1: BLOB REATTIVI (MAGNETISMO INVERSO) E MOVIMENTO CONTINUO ---
-        let time = 0;
-        function animateBackground() {
-            time += 0.01;
+        function drawTrail() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Interpolazione lineare per un movimento fluido
-            mouseX += (targetX - mouseX) * 0.1;
-            mouseY += (targetY - mouseY) * 0.1;
-
-            blobs.forEach((blob, index) => {
-                // Movimento orbitale naturale indipendente
-                const speed = parseFloat(blob.dataset.speed);
-                const orbitX = Math.sin(time * speed + index) * 100;
-                const orbitY = Math.cos(time * speed + index) * 100;
-
-                // Calcola la repulsione dal mouse
-                const rect = blob.getBoundingClientRect();
-                const blobCenterX = rect.left + rect.width / 2;
-                const blobCenterY = rect.top + rect.height / 2;
+            if (trails.length > 1) {
+                ctx.beginPath();
+                ctx.moveTo(trails[0].x, trails[0].y);
                 
-                const dx = blobCenterX - mouseX;
-                const dy = blobCenterY - mouseY;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                let repulsionX = 0;
-                let repulsionY = 0;
-                
-                // Se il mouse è vicino (< 400px), il blob "scappa"
-                if (distance < 400) {
-                    const force = (400 - distance) / 400; // 0 to 1
-                    repulsionX = (dx / distance) * force * 150;
-                    repulsionY = (dy / distance) * force * 150;
+                for (let i = 1; i < trails.length; i++) {
+                    const p = trails[i];
+                    // Curva di Bezier per rendere la linea fluida
+                    const xc = (trails[i - 1].x + p.x) / 2;
+                    const yc = (trails[i - 1].y + p.y) / 2;
+                    ctx.quadraticCurveTo(trails[i - 1].x, trails[i - 1].y, xc, yc);
                 }
 
-                // Applica movimento combinato
-                blob.style.transform = `translate(${orbitX + repulsionX}px, ${orbitY + repulsionY}px)`;
+                // Stile della scia (gradiente che svanisce)
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                
+                // Creiamo un gradiente basato sulla lunghezza della scia
+                const gradient = ctx.createLinearGradient(
+                    trails[0].x, trails[0].y, 
+                    trails[trails.length-1].x, trails[trails.length-1].y
+                );
+                gradient.addColorStop(0, 'rgba(203, 213, 225, 0)'); // Trasparente inizio
+                gradient.addColorStop(1, 'rgba(167, 139, 250, 0.4)'); // Lilla scuro fine
+                
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = 40; // Spessore della scia
+                ctx.stroke();
+            }
+
+            // Invecchia e rimuove i punti
+            for (let i = trails.length - 1; i >= 0; i--) {
+                trails[i].age++;
+                if (trails[i].age > trails[i].life) {
+                    trails.splice(i, 1);
+                }
+            }
+        }
+
+        // --- 3. TESTO CHE SCAPPA DAL MOUSE (TUTTE LE LETTERE) ---
+        const titleEl = document.getElementById('dynamic-title');
+        
+        // Funzione per splittare i text node senza rompere i tag <span> interni (come quello iridescente)
+        function splitTextIntoSpans(element) {
+            const children = Array.from(element.childNodes);
+            element.innerHTML = '';
+            
+            children.forEach(node => {
+                if (node.nodeType === 3) { // Text node
+                    const text = node.nodeValue;
+                    text.split('').forEach(char => {
+                        const span = document.createElement('span');
+                        span.className = 'repel-letter';
+                        span.innerHTML = char === ' ' ? '&nbsp;' : char;
+                        element.appendChild(span);
+                    });
+                } else if (node.nodeType === 1) { // Element node (es. br, span iridescente)
+                    if(node.tagName.toLowerCase() === 'br') {
+                        element.appendChild(node);
+                    } else {
+                        // Ricorsione per gli span interni
+                        const wrapperSpan = document.createElement('span');
+                        wrapperSpan.className = node.className + ' repel-word'; // Mantiene le classi (es. iridescent-text)
+                        splitTextIntoSpans(node); // processa il contenuto
+                        Array.from(node.childNodes).forEach(child => wrapperSpan.appendChild(child));
+                        element.appendChild(wrapperSpan);
+                    }
+                }
+            });
+        }
+        
+        splitTextIntoSpans(titleEl);
+        
+        // Raccogliamo tutte le lettere generate
+        const letters = Array.from(document.querySelectorAll('.repel-letter')).map(el => ({
+            el: el, x: 0, y: 0, targetX: 0, targetY: 0, rot: 0, targetRot: 0
+        }));
+
+        // --- 4. MOTORE FISICO UNIFICATO ---
+        let time = 0;
+        let cardRotX = 0; let cardRotY = 0;
+        let targetCardRotX = 0; let targetCardRotY = 0;
+
+        tiltCard.addEventListener('mouseenter', () => { isHoveringCard = true; glare.style.opacity = '1'; });
+        tiltCard.addEventListener('mouseleave', () => { isHoveringCard = false; targetCardRotX = 0; targetCardRotY = 0; glare.style.opacity = '0'; });
+
+        function renderLoop() {
+            time += 0.01;
+
+            // 4A. Disegna la scia sul canvas
+            drawTrail();
+
+            // 4B. Tilt Card 3D
+            if (isHoveringCard) {
+                const rect = tiltCard.getBoundingClientRect();
+                const x = mouse.x - rect.left;
+                const y = mouse.y - rect.top;
+                const cx = rect.width / 2;
+                const cy = rect.height / 2;
+                
+                targetCardRotX = ((y - cy) / cy) * -8; 
+                targetCardRotY = ((x - cx) / cx) * 8;
+                
+                glare.style.setProperty('--glare-x', `${(x / rect.width) * 100}%`);
+                glare.style.setProperty('--glare-y', `${(y / rect.height) * 100}%`);
+            }
+            cardRotX = lerp(cardRotX, targetCardRotX, 0.05);
+            cardRotY = lerp(cardRotY, targetCardRotY, 0.05);
+            tiltCard.style.transform = `rotateX(${cardRotX}deg) rotateY(${cardRotY}deg)`;
+
+            // 4C. Lettere del Titolo (Repulsione Fisica)
+            letters.forEach(l => {
+                const rect = l.el.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2 - l.x; // ignora la traslazione attuale
+                const centerY = rect.top + rect.height / 2 - l.y;
+                
+                const dx = mouse.x - centerX;
+                const dy = mouse.y - centerY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                // Se il mouse è vicino (< 80px), la lettera "scappa"
+                if (dist < 80) {
+                    const push = (80 - dist) / 80;
+                    l.targetX = -dx * push * 0.5; // Spinge via
+                    l.targetY = -dy * push * 0.5;
+                    l.targetRot = (dx > 0 ? -1 : 1) * push * 15; // Ruota leggermente
+                } else {
+                    l.targetX = 0; l.targetY = 0; l.targetRot = 0;
+                }
+
+                // Interpolazione elastica per il ritorno
+                l.x = lerp(l.x, l.targetX, 0.1);
+                l.y = lerp(l.y, l.targetY, 0.1);
+                l.rot = lerp(l.rot, l.targetRot, 0.1);
+                
+                l.el.style.transform = `translate(${l.x}px, ${l.y}px) rotate(${l.rot}deg)`;
             });
 
-            requestAnimationFrame(animateBackground);
-        }
-        animateBackground(); // Avvia il loop animato
+            // 4D. Sfondi Blob Magnetici
+            blobs.forEach((blob, index) => {
+                const speed = parseFloat(blob.dataset.speed);
+                const orbitX = Math.sin(time * speed * 2 + index) * 80;
+                const orbitY = Math.cos(time * speed * 1.5 + index) * 80;
 
-        // --- 3. GIOCO 2: TILT CARD 3D AVANZATO E RIFLESSO DINAMICO ---
-        mainContent.addEventListener('mousemove', (e) => {
-            const rect = tiltCard.getBoundingClientRect();
-            
-            // Calcola la posizione del mouse relativa al centro della card
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            // Gradi di rotazione (aumentati per effetto più drammatico)
-            const rotateX = ((y - centerY) / centerY) * -15; 
-            const rotateY = ((x - centerX) / centerX) * 15;
-            
-            tiltCard.style.transition = 'transform 0.1s ease-out';
-            tiltCard.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-
-            // Gestione Glare (Riflesso)
-            glare.style.opacity = '1';
-            glare.style.setProperty('--glare-x', `${(x / rect.width) * 100}%`);
-            glare.style.setProperty('--glare-y', `${(y / rect.height) * 100}%`);
-        });
-
-        mainContent.addEventListener('mouseleave', () => {
-            // Ritorno morbido alla posizione originale
-            tiltCard.style.transition = 'transform 0.8s cubic-bezier(0.1, 0.8, 0.2, 1)';
-            tiltCard.style.transform = `rotateX(0deg) rotateY(0deg)`;
-            glare.style.opacity = '0';
-        });
-
-        // --- 4. GIOCO 3: RIPPLE AL CLICK SULLO SFONDO ---
-        document.getElementById('main-body').addEventListener('mousedown', (e) => {
-            // Evita di creare cerchi se clicco sulla card (lasciamo interagire la card)
-            if(e.target.closest('#tilt-card')) return;
-
-            const ripple = document.createElement('div');
-            ripple.className = 'ripple';
-            
-            // Dimensione casuale dell'onda
-            const size = Math.random() * 200 + 100; 
-            ripple.style.width = `${size}px`;
-            ripple.style.height = `${size}px`;
-            
-            ripple.style.left = `${e.clientX}px`;
-            ripple.style.top = `${e.clientY}px`;
-            
-            document.body.appendChild(ripple);
-            
-            // Rimuovi l'elemento dal DOM dopo l'animazione
-            setTimeout(() => ripple.remove(), 1000);
-        });
-
-        // --- 5. GIOCO 4: GENERATORE FISICO DI PARTICELLE (Sulla parola "straordinario") ---
-        const sparkleText = document.getElementById('sparkle-text');
-        let particles = [];
-        const colors = ['#2dd4bf', '#38bdf8', '#818cf8', '#c084fc', '#e879f9']; // Colori olografici
-        
-        sparkleText.addEventListener('mousemove', (e) => {
-            // Genera particelle ad altissima frequenza per un effetto "magia liquida"
-            for(let i=0; i<2; i++) {
-                createParticle(e.clientX, e.clientY);
-            }
-        });
-
-        function createParticle(x, y) {
-            const el = document.createElement('div');
-            el.className = 'physics-particle shadow-lg';
-            
-            // Proprietà visuali
-            const size = Math.random() * 8 + 4;
-            el.style.width = `${size}px`;
-            el.style.height = `${size}px`;
-            el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            el.style.left = `${x}px`;
-            el.style.top = `${y}px`;
-            document.body.appendChild(el);
-
-            // Proprietà fisiche
-            const particle = {
-                el: el,
-                x: x,
-                y: y,
-                vx: (Math.random() - 0.5) * 15, // Velocità X esplosiva
-                vy: (Math.random() - 0.5) * 15 - 5, // Velocità Y (verso l'alto all'inizio)
-                gravity: 0.8, // Forza di gravità
-                life: 1, // Opacità/Vita
-                decay: Math.random() * 0.02 + 0.01 // Velocità di scomparsa
-            };
-            
-            particles.push(particle);
-        }
-
-        // Loop della fisica delle particelle
-        function updateParticles() {
-            for (let i = particles.length - 1; i >= 0; i--) {
-                let p = particles[i];
+                const rect = blob.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
                 
-                // Applica fisica
-                p.vy += p.gravity;
-                p.x += p.vx;
-                p.y += p.vy;
-                p.life -= p.decay;
-
-                // Aggiorna DOM
-                p.el.style.transform = `translate(${p.x - parseFloat(p.el.style.left)}px, ${p.y - parseFloat(p.el.style.top)}px)`;
-                p.el.style.opacity = p.life;
-
-                // Rimuovi le particelle morte
-                if (p.life <= 0 || p.y > window.innerHeight + 50) {
-                    p.el.remove();
-                    particles.splice(i, 1);
-                }
-            }
-            requestAnimationFrame(updateParticles);
-        }
-        updateParticles(); // Avvia il motore fisico
-
-        // --- 6. GIOCO 5: PARTY MODE SEGRETA ---
-        let badgeClicks = 0;
-        const magicBadge = document.getElementById('magic-badge');
-        const badgeText = document.getElementById('badge-text');
-
-        magicBadge.addEventListener('click', () => {
-            badgeClicks++;
-            
-            // Micro-animazione di bounce al click
-            magicBadge.style.transform = 'scale(0.85)';
-            setTimeout(() => magicBadge.style.transform = 'scale(1)', 150);
-
-            // Ad ogni click spawna qualche particella per dare feedback
-            const rect = magicBadge.getBoundingClientRect();
-            for(let i=0; i<5; i++){
-                createParticle(rect.left + rect.width/2, rect.top + rect.height/2);
-            }
-
-            if (badgeClicks === 5) {
-                document.body.classList.add('party-mode');
-                badgeText.innerText = "🎉 MODALITÀ PARTY ATTIVATA 🎉";
-                badgeText.classList.remove('text-slate-500');
-                badgeText.classList.add('text-indigo-600');
+                const dx = cx - mouse.x;
+                const dy = cy - mouse.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
                 
-                // Esplosione di particelle enorme
-                for(let i=0; i<100; i++){
-                    createParticle(window.innerWidth/2, window.innerHeight/2);
+                let repX = 0; let repY = 0;
+                if (dist < 400) {
+                    const force = (400 - dist) / 400;
+                    repX = (dx / dist) * force * 100;
+                    repY = (dy / dist) * force * 100;
                 }
                 
-                setTimeout(() => {
-                    document.body.classList.remove('party-mode');
-                    badgeText.innerText = "LANCIO IMMINENTE";
-                    badgeText.classList.add('text-slate-500');
-                    badgeText.classList.remove('text-indigo-600');
-                    badgeClicks = 0;
-                }, 10000); // 10 secondi di party
-            }
-        });
+                let currX = parseFloat(blob.dataset.currX || 0);
+                let currY = parseFloat(blob.dataset.currY || 0);
+                
+                currX = lerp(currX, orbitX + repX, 0.05);
+                currY = lerp(currY, orbitY + repY, 0.05);
+                
+                blob.dataset.currX = currX; blob.dataset.currY = currY;
+                blob.style.transform = `translate(${currX}px, ${currY}px)`;
+            });
+
+            requestAnimationFrame(renderLoop);
+        }
+        renderLoop();
     </script>
 </body>
 </html>
